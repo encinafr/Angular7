@@ -1,0 +1,14 @@
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\bin\Debug\netcoreapp2.2\Angular.API.deps.json
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\bin\Debug\netcoreapp2.2\Angular.API.runtimeconfig.json
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\bin\Debug\netcoreapp2.2\Angular.API.runtimeconfig.dev.json
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\bin\Debug\netcoreapp2.2\Angular.API.dll
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.csprojAssemblyReference.cache
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.csproj.CoreCompileInputs.cache
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.RazorAssemblyInfo.cache
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.RazorAssemblyInfo.cs
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.AssemblyInfoInputs.cache
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.AssemblyInfo.cs
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.RazorTargetAssemblyInfo.cache
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\bin\Debug\netcoreapp2.2\Angular.API.pdb
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.dll
+C:\Users\encin\Desktop\CursoAngular7\Angular.API\Angular.API\obj\Debug\netcoreapp2.2\Angular.API.pdb
