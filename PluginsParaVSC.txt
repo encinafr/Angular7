@@ -15,3 +15,4 @@
 • TypeScript Hero 
 • TypeScript Importer
  ALTER TABLE [YOMBU].[dbo].[Task] ALTER COLUMN [ComplexityId] int NULL
+ http://localhost:20700/mudanzas/search.html#/services/search?from=1&to=1&time=1&date=25%2F07%2F2019
