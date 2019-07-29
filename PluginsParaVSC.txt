@@ -16,3 +16,36 @@
 • TypeScript Importer
  ALTER TABLE [YOMBU].[dbo].[Task] ALTER COLUMN [ComplexityId] int NULL
  http://localhost:20700/mudanzas/search.html#/services/search?from=1&to=1&time=1&date=25%2F07%2F2019
+ 
+//Validación hora reserva
+  <div class="col-md-4">
+                <input id="horaReserva" class="form-control" type="time" value="00:00" min="20:00" max="22:00" name="horaReserva" 
+                       uib-tooltip="Hora en la que se quiere solicitar el servicio" tooltip-placement="bottom"
+                        ng-model="ctrl.vm.horaReserva"
+                       ng-class="{error: formReserva.horaReserva.$error.required}"
+                       required
+                       autofocus />
+
+            </div>
+            
+            
+            
+        /**
+        * Recibe el n�mero de paso al que se quiere navegar
+        */
+        function gotoStep(step, stateParams, optionParams)
+        {
+            for (var stepIndex = 0; stepIndex < ctrl.steps.length; stepIndex++) {
+                var stepItem = ctrl.steps[stepIndex];
+                if (stepItem.step == step) {
+                    ctrl.currentStep = stepItem.step;
+                    $state.go(stepItem.state, stateParams, optionParams);
+                    break;
+                }
+            }
+
+            if (ctrl.vm.schedule == 1) {
+                 document.getElementById("horaReserva").max = '23:00';
+            }
+        }
+            
