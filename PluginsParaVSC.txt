@@ -47,3 +47,11 @@ agregar class="form-group" en pantalla flete
             </div>
 
         </div>
+        
+        .radioButtonTextSize{
+    font-size:16px !important;
+}
+
+.radioButtonPadding{
+    padding-left:11%!important;
+}
