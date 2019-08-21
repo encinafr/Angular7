@@ -19,3 +19,31 @@
  http://localhost:20700/mudanzas/search.html#/services/search?from=1&to=1&time=1&date=25%2F07%2F2019
  
 agregar class="form-group" en pantalla flete
+
+
+
+   <div class="form-group">
+            <div class="row">
+                <div class="col-md-4">
+                    <h2>
+                        Datos del origen
+                    </h2>
+                </div>
+                <div class="col-md-6 radioMargin radioButtonTextSize">
+                    <div class="radio radio-info radio-inline">
+                        <input type="radio" name="radio1" id="radio1" value="1" ng-model="ctrl.vm.inmuebleFrom" checked="">
+                        <label for="radio1 radioButtonTextSize">
+                            Particular
+                        </label>
+                    </div>
+                    <div class="radio radio-info radio-inline radioButtonPadding">
+                        <input type="radio" name="radio1" id="radio2" value="2" ng-model="ctrl.vm.inmuebleFrom">
+                        <label for="radio2 radioButtonTextSize">
+                            Oficina
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
