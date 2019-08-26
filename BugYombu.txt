@@ -294,7 +294,7 @@ export class BugComponent extends ListBaseComponent implements OnInit {
 
 y el html
 
-<p-panel header="Métricas" *ngIf="this.getPermission(CONST_ACL.widget_Open)" [toggleable]="true">
+<p-panel header="MÃ©tricas" *ngIf="this.getPermission(CONST_ACL.widget_Open)" [toggleable]="true">
 	<div *ngIf="this.getPermission(CONST_ACL.widget_Open)">
 		<widget-indicator-bug-open #BugOpen [classColor]="'ui-g widget-box widget-box-1'" [lineId]="widgetBugOpenLineId"></widget-indicator-bug-open>
 	</div>
@@ -394,4 +394,28 @@ y el html
 <form-bug (eventEmitterUpdate)="updateResult($event)" (eventEmitterAdd)="updateResult($event)"> </form-bug>
 <form-bug-change-state (eventEmitterUpdate)="updateResult($event)"></form-bug-change-state>
 
+import {Pipe, PipeTransform} from '@angular/core';
+
+@Pipe({
+    name: 'search'
+})
+
+export class SearchPipe implements PipeTransform{
+public transform(value, args:string){
+    if(!value){
+        return;
+    }
+
+    if(!args){
+        return value;
+    }
+
+    args = args.toLowerCase();
+    return value.filter((item) => {
+        return JSON.stringify(item).toLowerCase().includes(args);
+    });
+    
+}
+
+}
 
