@@ -1,421 +1,54 @@
-//Bug Component
-
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { IBugItemDto } from './domain/IBugItemDto';
-import { BugStateEnum, BugSeverityEnum } from '../shared/enum/enum';
-import { FormBugCompoent } from './bug-form/form.component';
-import { TagSearchComponent } from '../shared/tag-search/tag-search.component';
-import { FormBugChangeStateCompoent } from './change-state-form/change-state-form.component';
-import { BugService } from './bug.service';
-import { ListBaseComponent } from '../core/list-base.component';
-import { InjectorBaseComponent } from '../core/injector-base.component';
-import { FilterTag } from '../shared/domain/FilterTag';
-import { SelectItem } from '../shared/domain/SelectItem';
-import { ApplicativeService } from '../line/applicative/applicative.service';
-import { ReleaseService } from '../release/release.service';
-import { forkJoin } from 'rxjs/observable/forkJoin';
-import { map } from 'rxjs/operators';
-import { ProjectService } from '../project/project.service';
-
-@Component({
-    selector: 'app-bug',
-    templateUrl: './bug.component.html',
-    styleUrls: ['./bug.component.css'],
-})
-export class BugComponent extends ListBaseComponent implements OnInit {
-
-    @ViewChild(TagSearchComponent)
-    public tagSearch: TagSearchComponent;
-    @ViewChild(FormBugCompoent)
-    public form: FormBugCompoent;
-    @ViewChild(FormBugChangeStateCompoent)
-    public changeStateForm: FormBugChangeStateCompoent;
-
-    public bugs: IBugItemDto[];
-    public widgetBugOpenLineId: number;
-    public matrixChangeState: [any, SelectItem];
-    public getMatrixStateCallback: Function;
-
-    public createbyid:string;
-    public assignedtoid:string;
-    private queryString : string;
-
-
-    constructor(
-        private bugService: BugService,
-        private projectService: ProjectService,
-        private applicativeService: ApplicativeService,
-        private releaseService: ReleaseService,
-        public injectorBase: InjectorBaseComponent
-    ) {
-        super(injectorBase);
-    }
-
-    //#region Page
-
-    ngOnInit() {
-        this.getMatrixStateCallback = () => { return this.matrixChangeState; };
-
-        this.subscriptionProjectChange = this.getEventProjectChange().subscribe((idProject) => {
-
-            if (!idProject || !this.getPermission(this.CONST_ACL.menu_Bug))
-                return this.router.navigate(['/']);
-
-            this.onLoad();
-        });
-
-        this.onLoad();
-    }
-
-    ngOnDestroy() {
-        this.subscriptionProjectChange.unsubscribe();
-    }
-
-    //#endregion
-
-    //#region ListBase
-
-    onLoad() {
-        super.onLoad();
-
-        this.bugService.getMatrixChangeState(this.getProjectId()).subscribe(
-            data => {
-                this.matrixChangeState = data;
-                this.list();
-            },
-            err => { this.showError(err.msg); }
-        );
-    }
-
-    clickToAdd() {
-        this.form.openAddForm();
-    }
-
-    clickToEdit(id) {
-        this.form.openEditForm(id);
-    }
-
-    clickToDelete(id) {
-        //NotImplemented
-    }
-
-    list() {
-        this.widgetBugOpenLineId = this.getProjectLineId();
-
-        let filter = this.tagSearch.getSelection();
-        filter.push(new FilterTag("lineId", this.getProjectLineId(), ""));
-
-        this.bugService.list(this.getQueryStringFilter(filter)).subscribe(
-            data => {
-                this.bugs = data;
-                this.countRecords(data);
-            },
-            err => { this.showError(err.msg); }
-        );
-    }
-
-    loadFilters() {
-
-        let filterLine: FilterTag[] = [];
-        filterLine.push(new FilterTag("lineId", this.getProjectLineId(), ""));
-
-        forkJoin(
-            this.projectService.listSelectItemUserDevOperativeMember(this.getProjectId()).pipe(map((res: any) => res)),
-            this.applicativeService.list(this.getQueryStringFilter(filterLine)).pipe(map((res: any) => res)),
-            this.releaseService.list(this.getQueryStringFilter(filterLine)).pipe(map((res: any) => res)),
-            this.bugService.listFilterTags().pipe(map((res: any) => res)),
-            this.bugService.getBugNumberList(this.getProjectLineId()).pipe(map((res: any) => res))
-        ).subscribe(
-            ([devs, applic, releas, bugFil, numberList]) => {
-
-                this.filterList = [];
-
-                if (devs) {
-                    devs.forEach(dev => {
-                        this.filterList.push(new FilterTag('assignedToId', dev.id, dev.name, 'label-rectangle label-default'));
-                    });
-                }
-
-                if (applic) {
-                    applic.forEach(applicative => {
-                        this.filterList.push(new FilterTag('applicativeId', applicative.id, applicative.name, 'label-rectangle label-default'));
-
-                        applicative.modules.forEach(module => {
-                            this.filterList.push(new FilterTag('moduleId', module.id, module.name, 'label-rectangle label-default'));
-                        });
-                    });
-                }
-
-                if (releas) {
-                    releas.forEach(release => {
-                        var name='';
-                        if (applic) {
-                            applic.forEach(applicative => {
-                                if(applicative.id==release.applicativeId){
-                                    name=applicative.name;
-                                }
-                            });
-                        }
-                        if(name==''){
-                            name=release.name;
-                        }
-                        else{
-                            name=name+' #'+release.name;
-                        }
-                        this.filterList.push(new FilterTag('releaseId', release.id, name, 'label-rectangle label-default'));
-                    });
-                }
-
-                if (bugFil) {
-                    bugFil.forEach(element => {
-                        element.styleClass = this.styleSearchTag(element.key, element.value);
-                        this.filterList.push(new FilterTag(element.key, element.value, element.text, element.styleClass));
-                    });
-                }
-
-                if (numberList) {
-                    numberList.forEach(element => {
-                        this.filterList.push(new FilterTag(element.key, element.value, element.text, 'label-rectangle label-default'));
-                    });
-                }
-            },
-            err => this.showError(err.msg)
-        );
-    }
-
-    //#endregion
-
-    //#region Funciones Varias
-
-    styleSearchTag(key, value) {
-        switch (key) {
-            case 'stateId':
-                return this.styleState(value);
-            case 'severityId':
-                return this.styleSeverity(value);
-            default:
-                return 'label-rectangle label-default';
-        }
-    }
-
-    styleState(stateId: number) {
-        switch (stateId) {
-            case BugStateEnum.Open:
-            case BugStateEnum.ReOpen:
-                return 'label-rectangle label-state-open';
-            case BugStateEnum.Resolved:
-                return 'label-rectangle label-state-resolved';
-            case BugStateEnum.InTesting:
-                return 'label-rectangle label-state-testing';
-            case BugStateEnum.Rejected:
-            case BugStateEnum.ClosedCanceled:
-            case BugStateEnum.ClosedRejected:
-            case BugStateEnum.ClosedResolved:
-                return 'label-rectangle label-state-closed';
-            case BugStateEnum.Blocked:
-                return 'label-rectangle label-state-blocked';
-            case BugStateEnum.Deferred:
-                return 'label-rectangle label-state-deferred';
-            case BugStateEnum.Assigned:
-                return 'label-rectangle label-state-assigned';
-        }
-    }    
-
-    styleSeverity(severityId: number) {
-        switch (severityId) {
-            case BugSeverityEnum.Blocker:
-            case BugSeverityEnum.Critical:
-                return 'label-rectangle label-severity-block';
-            case BugSeverityEnum.High:
-                return 'label-rectangle label-severity-alta';
-            case BugSeverityEnum.Half:
-                    return 'label-rectangle label-severity-media';
-            case BugSeverityEnum.Low:
-                return 'label-rectangle label-severity-baja';
-        }
-    }
-
-    styleRelease(isReleaseDev: boolean) {
-        return (isReleaseDev) ? 'label-rectangle label-devrelease' : 'label-rectangle label-info';
-    }
-
-    changeState(bugId, event) {
-        this.changeStateForm.openChangeState(event.value, bugId);
-    }
-
-    //#endregion
-
-    //Region Filtros
-
-    buildFiltersQueryString() {
-        let queryStringParams = Object();
-    
-        if (this.createbyid != "") {
-          queryStringParams.createbyid = this.createbyid;
-        }
-
-        if (this.assignedtoid != "") {
-            queryStringParams.assignedToId = this.assignedtoid;
-          }
-    
-        
-        let uri = encodeURIComponent;
-    
-        this.queryString = Object.keys(queryStringParams)
-          .map(q => uri(q) + '=' + uri(queryStringParams[q]))
-          .join('&');
-      }
-
-      filterList1(){
-        this.buildFiltersQueryString() ;
-          alert(this.queryString );
-          if (this.queryString.length > 0) {
+<form #f="ngForm" (ngSubmit)="onSubmit()">
+                <div class="row">
+                    <div class="col-6">
+                        <fieldset class="form-group">
+                            <label for="Name">
+                                Nombre
+                            </label>
+                            <input type="text" class="form-control" placeholder="Nombre" [(ngModel)]='entity.name' name="name" />
+                        </fieldset>
+                    </div>
+                    <div class="col-6">
+                        <fieldset class="form-group">
+                            <label for="code">
+                                 Código
+                            </label>
+                            <input type="text" class="form-control " placeholder="Código" [(ngModel)]='entity.code' name="code" />
+                        </fieldset>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-6">
+                        <fieldset class="form-group">
+                            <label for="address">
+                                Dirección
+                            </label>
+                            <input type="text" class="form-control" placeholder="Dirección" [(ngModel)]='entity.address' name="address" />
+                        </fieldset>
+                    </div>
+                    <div class="col-6">
+                        <fieldset class="form-group">
+                            <label for="notificationMail">
+                                Email
+                            </label>
+                            <input type="text" class="form-control" placeholder="Email" [(ngModel)]='entity.notificationMail' name="notificationMail" />
+                        </fieldset>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-6">
+                        <label for="totem-store">Gerente de sucursal</label>
+                        <select name="userId" class="form-control" [(ngModel)]="entity.storeManagerId">
+                            <option *ngFor="let user of users" [ngValue]="user.id">{{ user.firstName }} {{user.lastName}}</option>
+                        </select>
+                    </div>
+                    <div class="block mb-3"></div>
+                </div>
             
-            this.bugService.list("?" + this.queryString).subscribe((_filteredBugs) => {
-              this.bugs = _filteredBugs;
-            });
-          } else {
-            this.bugs == null;
-          }
-          this.bugService.list(this.queryString).subscribe(
-            data => {
-                debugger;
-                this.bugs = data;
-                this.countRecords(data);
-            }
-            // err => { this.showError(err.msg); }
-        );
-      }
-
-    
-    //#endregion
-
-}
-
-y el html
-
-<p-panel header="Métricas" *ngIf="this.getPermission(CONST_ACL.widget_Open)" [toggleable]="true">
-	<div *ngIf="this.getPermission(CONST_ACL.widget_Open)">
-		<widget-indicator-bug-open #BugOpen [classColor]="'ui-g widget-box widget-box-1'" [lineId]="widgetBugOpenLineId"></widget-indicator-bug-open>
-	</div>
-</p-panel>
-
-
-
-<p-panel header="Listado">
-	<div class="card card-w-title">
-		<tag-search [filterList]="filterList" (eventEmitterFilter)="list()"> </tag-search>
-	</div>
-
-	<!-- Filters -->
-	<div class="ui-g ui-fluid">
-		<div class="ui-g-12 ui-md-4">
-			<label for="float-input">Reportado por: </label>
-			<input id="float-input" type="text" size="20" pInputText [(ngModel)]="createbyid" pTooltip="Enter your username" tooltipPosition="bottom" > 
-		</div>
-		<div class="ui-g-12 ui-md-4">
-			<label for="float-input">Asignado a: </label>
-			<input id="float-input" type="text" size="30" pInputText [(ngModel)]="assignedtoid" > 
-		</div>
-		<div class="ui-g-12 ui-md-4">
-			<label for="float-input">Diagnosticado/ No Diagnosticado</label>
-			<input id="float-input" type="text" size="30" pInputText>
-		</div> 
-		<div class="ui-g-12 ui-md-4">
-			<label for="float-input">Diagnosticado ok/ Diagnosticado incorrectamente</label>
-			<input id="float-input" type="text" size="30" pInputText> 
-		</div>
-		<div class="ui-g-12 ui-md-4">
-				<p-checkbox [(ngModel)]="checked" label="Activo" binary="true"></p-checkbox>
-		</div>
-	    
-
-		<div class="ui-g-12 ui-md-2">
-				<button pButton type="button" ui-button-info label="Filtrar" icon="pi-filter" (click)="filterList1()"></button>
-			</div>
-			<div class="ui-g-12 ui-md-2">
-					<button pButton type="button" label="Limpiar Filtros" class="ui-button-secondary" (click)="clearFiltersForm()"></button>
-			</div>
-	</div>
-	<!--  -->
-
-	<div class="ui-g">
-		<div class="ui-g-12">
-			<div class="pull-left">{{msgResultList}}</div>
-			<div class="pull-right" *ngIf="this.getPermission(CONST_ACL.bug_Add)">
-				<button type="text" (click)="clickToAdd()" pButton icon="fa-external-link" label="Agregar"></button>
-			</div>
-		</div>
-	</div>
-
-	<div class="ui-g">
-		<div class="ui-g-12">
-			<p-dataGrid [value]="bugs" class="yombuGrid">
-				<ng-template let-bug pTemplate="item">
-					<table class="ui-md-12">
-						<tbody>
-							<tr class="trline">
-								<td class="col-overview ui-lg-2 ui-md-2 ui-sm-2">
-									<list-valid-change [style]="styleState(bug.stateId)" [text]="bug.state" [value]="bug.stateId" [matrix]="getMatrixStateCallback"
-									 (selectChange)="changeState(bug.id, $event)"></list-valid-change>
-								</td>
-								<td clickDbClick class="col-overview cursorPointer ui-lg-1 ui-md-1 ui-sm-1 bugNumberList" 
-								 (doubleClick)="clickToEdit(bug.id)">
-									Bug #{{bug.number}}
-								</td>
-								<td clickDbClick class="col-overview cursorPointer ui-lg-6 ui-md-6 ui-sm-6"
-								 (doubleClick)="clickToEdit(bug.id)">
-									{{bug.title}}
-								</td>
-								<td class="col-overview ui-lg-1 ui-md-1 ui-sm-1">
-									<div>
-										<span [ngClass]="styleSeverity(bug.severityId)"> {{bug.severity}} </span>
-									</div>
-								</td>
-								<td class="col-overview ui-lg-1 ui-md-1 ui-sm-1">
-									<div>
-										<span [ngClass]="styleRelease(bug.isReleaseDev)"> #{{bug.release}} </span>
-									</div>
-								</td>
-								<td class="ui-lg-1 ui-md-1 ui-sm-1">
-									<div class="assigned">
-										{{bug.assignedTo}}
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</ng-template>
-			</p-dataGrid>
-		</div>
-	</div>
-</p-panel>
-
-<form-bug (eventEmitterUpdate)="updateResult($event)" (eventEmitterAdd)="updateResult($event)"> </form-bug>
-<form-bug-change-state (eventEmitterUpdate)="updateResult($event)"></form-bug-change-state>
-
-import {Pipe, PipeTransform} from '@angular/core';
-
-@Pipe({
-    name: 'search'
-})
-
-export class SearchPipe implements PipeTransform{
-public transform(value, args:string){
-    if(!value){
-        return;
-    }
-
-    if(!args){
-        return value;
-    }
-
-    args = args.toLowerCase();
-    return value.filter((item) => {
-        return JSON.stringify(item).toLowerCase().includes(args);
-    });
-    
-}
-
-}
-
+    <hr>
+    <div class="container">
+        <div class="row">
+            <div class="col-8"></div>
+            <div class="col-2"> <button class="btn btn-secondary" [routerLink]="['/store']">Cancelar</button></div>
+            <div class="col-2"> <button class="btn btn-primary btnPadding" type="submit">Guardar</button></div>
+        </div>
+    </div>
+</form>
