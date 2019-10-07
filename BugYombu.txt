@@ -1,54 +1,228 @@
-<form #f="ngForm" (ngSubmit)="onSubmit()">
-                <div class="row">
-                    <div class="col-6">
-                        <fieldset class="form-group">
-                            <label for="Name">
-                                Nombre
-                            </label>
-                            <input type="text" class="form-control" placeholder="Nombre" [(ngModel)]='entity.name' name="name" />
-                        </fieldset>
-                    </div>
-                    <div class="col-6">
-                        <fieldset class="form-group">
-                            <label for="code">
-                                 Código
-                            </label>
-                            <input type="text" class="form-control " placeholder="Código" [(ngModel)]='entity.code' name="code" />
-                        </fieldset>
-                    </div>
-                    <div class="w-100"></div>
-                    <div class="col-6">
-                        <fieldset class="form-group">
-                            <label for="address">
-                                Dirección
-                            </label>
-                            <input type="text" class="form-control" placeholder="Dirección" [(ngModel)]='entity.address' name="address" />
-                        </fieldset>
-                    </div>
-                    <div class="col-6">
-                        <fieldset class="form-group">
-                            <label for="notificationMail">
-                                Email
-                            </label>
-                            <input type="text" class="form-control" placeholder="Email" [(ngModel)]='entity.notificationMail' name="notificationMail" />
-                        </fieldset>
-                    </div>
-                    <div class="w-100"></div>
-                    <div class="col-6">
-                        <label for="totem-store">Gerente de sucursal</label>
-                        <select name="userId" class="form-control" [(ngModel)]="entity.storeManagerId">
-                            <option *ngFor="let user of users" [ngValue]="user.id">{{ user.firstName }} {{user.lastName}}</option>
-                        </select>
-                    </div>
-                    <div class="block mb-3"></div>
-                </div>
-            
-    <hr>
-    <div class="container">
-        <div class="row">
-            <div class="col-8"></div>
-            <div class="col-2"> <button class="btn btn-secondary" [routerLink]="['/store']">Cancelar</button></div>
-            <div class="col-2"> <button class="btn btn-primary btnPadding" type="submit">Guardar</button></div>
-        </div>
-    </div>
-</form>
+.inputsStylesFilter {
+    font-size: 14px !important;
+    line-height: 18px !important;
+    letter-spacing: normal !important;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    color: gray !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    position: relative !important;
+    width: auto !important;
+    background-color: rgba(255, 255, 255, 0.86);
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: rgb(86, 97, 97) !important;
+    border-image: initial !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    margin: 0em;
+    font: 400 13.3333px Arial;
+}
+
+.inputsStyles .select {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 350px;
+    height: 40px;
+}
+
+.inputSearch {
+    padding-left: 20% !important;
+    padding-right: 20% !important;
+}
+
+.selectButton {
+    background-color: rgba(255, 255, 255, 0.86) !important;
+    color: rgba(255, 255, 255, 0.86) !important;
+    border-color: rgb(86, 97, 97) !important;
+    border-color: rgb(86, 97, 97) !important;
+    font: 400 13.3333px Arial;
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+.ml10 {
+    margin-left: 10px;
+}
+
+.ml20 {
+    margin-left: 20px;
+}
+
+.ml-1-3 {
+  margin-left: -1.5%;
+}
+
+.ml-1 {
+    margin-left: 1%;
+}
+
+
+.ml2{
+ margin-left:2.3%;
+}
+
+.ml3 {
+    margin-left: 3%;
+}
+
+.ml5{
+    margin-left:4.76%;
+}
+
+.mb10{
+    margin-bottom: 10px;
+}
+
+.mb-3{
+    margin-bottom:-3%;
+}
+
+.mb-1 {
+    margin-bottom: -1%;
+}
+
+.ml8 {
+    margin-left: 8%;
+}
+
+.ml-13-2 {
+  margin-left: 13.2%;
+}
+
+.ml-6 {
+    margin-left: -6%;
+}
+
+.h2Size {
+    font-size: 18px;
+    margin-left: 25%;
+}
+
+.h2title {
+    font-size: 25px;
+    margin-left: 25%;
+}
+
+.letter-btn {
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+}
+
+.btn-SosFletero {
+    margin-left: 80%;
+    margin-top: -20%;
+}
+
+
+/* Smartphones (portrait & landscape) */
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+}
+/* Smartphones (landscape) */
+@media only screen and (min-width : 321px) {
+}
+/* Smartphones (portrait) */
+@media only screen and (max-width : 320px) {
+}
+/* iPads (portrait & landscape) */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+}
+/* iPads (landscape) */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+}
+/* iPads (portrait) */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+    .text-branding {
+        text-transform: uppercase;
+        padding-top: 6%;
+    }
+}
+/* Ordenadores de sobremesa y portátiles */
+@media only screen and (min-width : 1224px) {
+    
+}
+
+@media (max-width : 1024px) {
+    /*.text-branding {
+        text-transform: uppercase;
+        padding-top: 6% !important;
+    }
+
+    .btn-SosFletero {
+        margin-left: 80%;
+        margin-top: -30%;
+    }*/
+
+    .text-jumbo {
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .hero_container{
+        height:500px;
+    }
+
+    #search-section {
+        width: 90%;
+        margin-top: 8% !important;
+        margin-bottom: -1%;
+    }
+
+    .inputsStyles {
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+
+
+    .inputsStylesLeft {
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+    
+
+    .h2title {
+        font-size: 20px;
+        margin-left: 25%;
+    }
+
+    .h2Size {
+        font-size: 15px;
+        margin-left: 25%;
+    }
+
+    .inputsStylesFilter {
+        width: 95% !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+}
+/* Pantallas grandes */
+@media only screen and (min-width : 1824px) {
+    .btn-SosFletero{
+        margin-top: -10%;
+    }
+
+    .hero_container {
+        background-image: url(../img/fondo-landing-1.jpg);
+        background-size: cover;
+        height: 1300px;
+        filter: grayscale(40%);
+    }
+
+    .mb-3 {
+        margin-bottom: 6%;
+        margin-top: 40%;
+    }
+
+}
+/* iPhone 4 */
+@media only screen and (-webkit-min-device-pixel-ratio : 1.5), only screen and (min-device-pixel-ratio : 1.5) {
+}
+
