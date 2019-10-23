@@ -1,228 +1,652 @@
-.inputsStylesFilter {
-    font-size: 14px !important;
-    line-height: 18px !important;
-    letter-spacing: normal !important;
-    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
-    color: gray !important;
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
-    cursor: pointer !important;
-    display: inline-block !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    position: relative !important;
-    width: auto !important;
-    background-color: rgba(255, 255, 255, 0.86);
-    border-width: 1px !important;
-    border-style: solid !important;
-    border-color: rgb(86, 97, 97) !important;
-    border-image: initial !important;
-    border-radius: 4px !important;
-    text-decoration: none !important;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-}
-
-.inputsStyles .select {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    width: 350px;
-    height: 40px;
-}
-
-.inputSearch {
-    padding-left: 20% !important;
-    padding-right: 20% !important;
-}
-
-.selectButton {
-    background-color: rgba(255, 255, 255, 0.86) !important;
-    color: rgba(255, 255, 255, 0.86) !important;
-    border-color: rgb(86, 97, 97) !important;
-    border-color: rgb(86, 97, 97) !important;
-    font: 400 13.3333px Arial;
-}
-
-.mt20 {
-    margin-top: 20px;
-}
-
-.ml10 {
-    margin-left: 10px;
-}
-
-.ml20 {
-    margin-left: 20px;
-}
-
-.ml-1-3 {
-  margin-left: -1.5%;
-}
-
-.ml-1 {
-    margin-left: 1%;
+<div class="ui-g-12" [hidden]="!person.employee">
+			<div class="ui-grid ui-grid-responsive ui-fluid">
+				<div class="ui-grid-row">
+					
+					<div class="ui-grid-col-3">
+						<label class="label-engee">Admisión</label>
+						<input maxLength="100" name="admissionDate" #admissionDate="ngModel" [(ngModel)]="person.employeeUser.admissionDate" type="text" pInputText [required]="person.employee">
+					</div>
+					<div class="ui-grid-col-3">
+						<label class="label-engee">Legajo</label>
+						<input maxLength="100" name="fileNumber" #fileNumber="ngModel" [(ngModel)]="person.fileNumber" type="text" pInputText [required]="person.employee">
+					</div>
+					<div class="ui-grid-col-3">
+						<label class="label-engee">Legajo</label>
+						<input maxLength="100" name="fileNumber" #fileNumber="ngModel" [(ngModel)]="person.fileNumber" type="text" pInputText [required]="person.employee">
+					</div>
+					<div class="ui-grid-col-3">
+						<label class="label-engee">Legajo</label>
+						<input maxLength="100" name="fileNumber" #fileNumber="ngModel" [(ngModel)]="person.fileNumber" type="text" pInputText [required]="person.employee">
+					</div>
+					<div class="ui-grid-col-3">
+						<label class="label-engee">Legajo</label>
+						<input maxLength="100" name="fileNumber" #fileNumber="ngModel" [(ngModel)]="person.fileNumber" type="text" pInputText [required]="person.employee">
+					</div>
+					
+				</div>
+                
+                export interface IEmployeeUser {
+   id :number,
+   fileNumber: number,
+   admissionDate:Date,
+   lowDate: Date,
+   carrerPlanLevelId: number,
+   seniorityId:number,
+   carrerPlanLevelPoints: number,
+   workDay:number
 }
 
 
-.ml2{
- margin-left:2.3%;
-}
+ public static class EmployeeUserTranslator
+    {
+        public static Employee ToDto(this EmployeeDto entity)
+        {
+            if (entity.IsNullOrEmpty())
+                return new Employee();
 
-.ml3 {
-    margin-left: 3%;
-}
-
-.ml5{
-    margin-left:4.76%;
-}
-
-.mb10{
-    margin-bottom: 10px;
-}
-
-.mb-3{
-    margin-bottom:-3%;
-}
-
-.mb-1 {
-    margin-bottom: -1%;
-}
-
-.ml8 {
-    margin-left: 8%;
-}
-
-.ml-13-2 {
-  margin-left: 13.2%;
-}
-
-.ml-6 {
-    margin-left: -6%;
-}
-
-.h2Size {
-    font-size: 18px;
-    margin-left: 25%;
-}
-
-.h2title {
-    font-size: 25px;
-    margin-left: 25%;
-}
-
-.letter-btn {
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
-}
-
-.btn-SosFletero {
-    margin-left: 80%;
-    margin-top: -20%;
-}
-
-
-/* Smartphones (portrait & landscape) */
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-}
-/* Smartphones (landscape) */
-@media only screen and (min-width : 321px) {
-}
-/* Smartphones (portrait) */
-@media only screen and (max-width : 320px) {
-}
-/* iPads (portrait & landscape) */
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
-}
-/* iPads (landscape) */
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
-}
-/* iPads (portrait) */
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
-    .text-branding {
-        text-transform: uppercase;
-        padding-top: 6%;
-    }
-}
-/* Ordenadores de sobremesa y portátiles */
-@media only screen and (min-width : 1224px) {
-    
-}
-
-@media (max-width : 1024px) {
-    /*.text-branding {
-        text-transform: uppercase;
-        padding-top: 6% !important;
-    }
-
-    .btn-SosFletero {
-        margin-left: 80%;
-        margin-top: -30%;
-    }*/
-
-    .text-jumbo {
-        font-size: 30px;
-        font-weight: 700;
-    }
-
-    .hero_container{
-        height:500px;
-    }
-
-    #search-section {
-        width: 90%;
-        margin-top: 8% !important;
-        margin-bottom: -1%;
-    }
-
-    .inputsStyles {
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
-    }
-
-
-    .inputsStylesLeft {
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
+            return new Employee()
+            {
+              AdmissionDate = entity.AdmissionDate,
+              CarrerPlanLevelId = entity.CarrerPlanLevelId,
+              WorkDay = entity.WorkDay,
+              SeniorityId = entity.SeniorityId,
+              FileNumber = entity.FileNumber,
+              LowDate = entity.LowDate,
+              CarrerPlanLevelPoints = entity.CarrerPlanLevelPoints,
+            };
+        }
+   
     }
     
+    
+    using Engee.Common.Extensions;
+using Engee.Crypto;
+using Engee.YOMBU.API.Common;
+using Engee.YOMBU.API.DTOs;
+using Engee.YOMBU.API.Translators;
+using Engee.YOMBU.Core.Common;
+using Engee.YOMBU.Core.Notifications.Repositories;
+using Engee.YOMBU.Core.Repositories;
+using Engee.YOMBU.Core.Repositories.EF.Model;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Web.Http;
 
-    .h2title {
-        font-size: 20px;
-        margin-left: 25%;
-    }
+namespace Engee.YOMBU.API.Controllers
+{
 
-    .h2Size {
-        font-size: 15px;
-        margin-left: 25%;
-    }
+    public class usersController : ApiCRUDController<User, UserDto>
+    {
+        #region Properties
 
-    .inputsStylesFilter {
-        width: 95% !important;
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
+        protected UserRepository _concreteRepo;
+        protected NotificationRepository _ntfyRepo;
+        protected ClientRepository _clientRepo;
+        protected ProjectRepository _projectRepo;
+
+        #endregion
+
+        #region Public 
+
+        /// <summary>
+        /// Obtiene todos los projectos del usuario en los cuales fue asignado como AM
+        /// </summary>
+        /// <returns>Array de los projectos del usuario asignado como AM</returns>
+        [HttpGet]
+        [Route("users/projects/select-item")]
+        public IHttpActionResult ListUserProjectsReports()
+        {
+            Expression<Func<Project, bool>> exp;
+            exp = (p => p.AccountManagerId == LoggedUserId || 
+                        p.PMId == LoggedUserId || 
+                        p.DEVLeadId == LoggedUserId || 
+                        p.QALeadId == LoggedUserId || 
+                        LoggedRoleId == (int)RoleEnum.DM ||
+                        LoggedRoleId == (int)RoleEnum.CTO ||
+                        (p.ProjectCharter.AreaId == (int)AreaEnum.Calidad && LoggedRoleId == (int)RoleEnum.QAFactManajer) ||
+                        (p.ProjectCharter.AreaId == (int)AreaEnum.Desarrollo && LoggedRoleId == (int)RoleEnum.SoftFactManager) ||
+                        (p.ProjectRoles.Any(pr => pr.UserId == LoggedUserId && pr.RoleId == LoggedRoleId)));
+
+            return ListSelectItemByExp(exp);
+        }
+
+        /// <summary>
+        /// Obtiene todos los permisos del usuario
+        /// </summary>
+        /// <param name="id">Id del usuario</param>
+        /// <returns>Array de los permisos del usuario</returns>
+        [HttpGet]
+        [Route("users/{id}/permissions")]
+        public virtual IHttpActionResult GetPermissions(int id)
+        {
+            var usr = _concreteRepo.GetWithIncludes(id);
+            if (!usr.IsNullOrEmpty())
+            {
+                var upDto = new UserPermissionDto();
+                var permissions = usr.Role.GetFullPermissions();
+                upDto.AllLevelPermissions = permissions.Where(p => p.LevelId == (int)PermissionLevelEnum.All).ToDto();
+                upDto.ApplicationPermissions = permissions.Where(p => p.LevelId == (int)PermissionLevelEnum.NotOnProject).ToDto();
+                upDto.ProjectPermissions = new List<ProjectPermissionDto>();
+
+                foreach (var pr in usr.ProjectRoles)
+                {
+                    upDto.ProjectPermissions.Add(new ProjectPermissionDto()
+                    {
+                        Role = pr.Role.ToDto(),
+                        Project = pr.Project.ToShortDto(),
+                        Permissions = pr.Role.Permissions.ToDto()
+                    });
+                }
+
+                return Ok(upDto);
+            }
+            else
+                return NoContent();
+        }
+
+        /// <summary>
+        /// Obtiene todos los projectos del usuario
+        /// </summary>
+        /// <param name="id">Id del usuario</param>
+        /// <returns>Array de los projectos del usuario</returns>
+        [HttpGet]
+        [Route("users/{id}/projects")]
+        public virtual IHttpActionResult GetProjects(int id)
+        {
+            var usr = _concreteRepo.GetWithIncludes(id);
+            if (!usr.IsNullOrEmpty())
+            {
+                var projectRole = usr.ProjectRoles.Where(pr => pr.Project.StateId != (int) ProjectStateEnum.Cerrado);
+
+                dynamic lstJson = new JArray();
+
+                foreach (var item in projectRole)
+                {
+                    dynamic json = new JObject();
+
+                    json.id = item.ProjectId;
+                    json.name = item.Project.Name;
+                    json.abbreviation = item.Project.Abbreviation;
+                    json.roleId = item.RoleId;
+                    json.roleName = item.Role.Name;
+                    json.typeId = item.Project.ProjectCharter.TypeId;
+                    json.areaId = item.Project.ProjectCharter.AreaId;
+                    json.lineId = item.Project.LineId;
+                    json.lineName = item.Project.Line.Name;
+
+                    lstJson.Add(json);
+                }
+
+                return Ok(lstJson);
+            }
+            else
+                return NoContent();
+        }
+
+        /// <summary>
+        /// Obtiene todos los proyectos que no se encuentran cerrados por rol y usuario.
+        /// </summary>
+        [HttpGet]
+        [Route("users/projects/actives")]
+        public IHttpActionResult ListActiveProjectsByRoleAndUser()
+        {
+            IEnumerable<Project> projects;
+
+            var roleId = LoggedRoleId;
+            var userId = LoggedUserId;
+
+            if (roleId == (int)RoleEnum.DM  || roleId == (int)RoleEnum.SoftFactManager || roleId == (int)RoleEnum.ProjectManager ||
+                roleId == (int)RoleEnum.CTO || roleId == (int)RoleEnum.QAFactManajer   || roleId == (int)RoleEnum.SWAT)
+                projects = _projectRepo.ListActive();
+            else
+                projects = _projectRepo.ListActiveByRoleIdAndUserId(userId);
+
+            var projectsJson = toJsonArrayProject(projects);
+
+            if (!projects.IsNullOrEmpty())
+                return Ok(projectsJson);
+            else
+                return NoContent();
+        }
+
+        #region SelectItem
+
+        [HttpGet]
+        [Route("users/select-item/3king/actives")]
+        public IHttpActionResult ListSelectItemActive3King()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.DM || u.RoleId == (int)RoleEnum.CTO || u.RoleId == (int)RoleEnum.AccountManager));
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/dev-lead/actives")]
+        public IHttpActionResult ListSelectItemActiveDevLeads()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.DEVLead  || u.RoleId == (int)RoleEnum.ProjectManager || u.RoleId == (int)RoleEnum.DM));
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/qa-lead/actives")]
+        public IHttpActionResult ListSelectItemActiveQaLeads()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.QALead || u.RoleId == (int)RoleEnum.QAFactManajer));
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/pm/actives")]
+        public IHttpActionResult ListSelectItemActivePMs()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && u.RoleId == (int)RoleEnum.ProjectManager || u.RoleId == (int)RoleEnum.DM);
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/sm/actives")]
+        public IHttpActionResult ListSelectItemActiveSMs()
+        {
+#warning por el momento se agregan a DM y CTO.
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.SoftFactManager 
+                                    || u.RoleId == (int)RoleEnum.QAFactManajer
+                                    || u.RoleId == (int)RoleEnum.DM
+                                    || u.RoleId == (int)RoleEnum.CTO));
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/swat/actives")]
+        public IHttpActionResult ListSelectItemActiveSwats()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.SWAT || u.RoleId == (int)RoleEnum.CTO || u.RoleId == (int)RoleEnum.DM));
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/developer/actives")]
+        public IHttpActionResult ListSelectItemActiveDevelopers()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.Developer || u.RoleId == (int)RoleEnum.SWAT));
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/functional-tester/actives")]
+        public IHttpActionResult ListSelectItemActiveFuntionalTester()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.FunctionalTester || u.RoleId == (int)RoleEnum.AutomationTester ));
+
+            return ListSelectItemByExp(exp);
+        }
+        
+        [HttpGet]
+        [Route("users/select-item/automation-tester/actives")]
+        public IHttpActionResult ListSelectItemActiveAutomationTester()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && u.RoleId == (int)RoleEnum.AutomationTester);
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/functional-analyst/actives")]
+        public IHttpActionResult ListSelectItemActiveFunctionalAnalyst()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && (u.RoleId == (int)RoleEnum.FunctionalAnalyst || u.RoleId == (int)RoleEnum.DEVLead));
+
+            return ListSelectItemByExp(exp);
+        }
+
+
+        [HttpGet]
+        [Route("users/select-item/client-PO/{clientId}/actives")]
+        public IHttpActionResult ListSelectItemActiveClientPOByClient(int clientId)
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && u.RoleId == (int)RoleEnum.ClientProductOwner && u.Client.Id == clientId);
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/client-developer/actives")]
+        public IHttpActionResult ListSelectItemActiveClientDeveloper()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && u.RoleId == (int)RoleEnum.ClientDevelopment);
+
+            return ListSelectItemByExp(exp);
+        }
+
+        [HttpGet]
+        [Route("users/select-item/supplier-developer/actives")]
+        public IHttpActionResult ListSelectItemActiveSupplierDeveloper()
+        {
+            Expression<Func<User, bool>> exp;
+            exp = (u => u.Active && u.RoleId == (int)RoleEnum.SupplierDevelopment);
+
+            return ListSelectItemByExp(exp);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Obtiene todos los desarrolladores activos.
+        /// </summary>
+        [HttpGet]
+        [Route("users/developers/actives")]
+        public virtual IHttpActionResult ListActiveDevelopers()
+        {
+            var users = _repo.FindBy(u => (u.Active) && (u.RoleId == (int)RoleEnum.Developer || u.RoleId == (int)RoleEnum.SWAT));
+
+            dynamic array = new JArray();
+            foreach (var p in users)
+            {
+                dynamic json = new JObject();
+                json.id = p.Id;
+
+                array.Add(json);
+            }
+
+            if (!users.IsNullOrEmpty())
+                return Ok(array);
+            else
+                return NoContent();
+        }
+
+        /// <summary>
+        /// Obtiene todos los testers activos.
+        /// </summary>
+        [HttpGet]
+        [Route("users/testers/actives")]
+        public virtual IHttpActionResult ListActiveTesters()
+        {
+            var users = _repo.FindBy(u => u.Active && u.RoleId == (int)RoleEnum.FunctionalTester);
+
+            dynamic array = new JArray();
+            foreach (var p in users)
+            {
+                dynamic json = new JObject();
+                json.id = p.Id;
+
+                array.Add(json);
+            }
+
+            if (!users.IsNullOrEmpty())
+                return Ok(array);
+            else
+                return NoContent();
+        }
+
+        /// <summary>
+        /// Obtiene todos los devleads activos.
+        /// </summary>
+        [HttpGet]
+        [Route("users/devleads/actives")]
+        public virtual IHttpActionResult ListActiveDevLeads()
+        {
+            var users = _repo.FindBy(u => u.Active && u.RoleId == (int)RoleEnum.DEVLead || u.RoleId == (int)RoleEnum.ProjectManager);
+
+            dynamic array = new JArray();
+            foreach (var p in users)
+            {
+                dynamic json = new JObject();
+                json.id = p.Id;
+
+                array.Add(json);
+            }
+
+            if (!users.IsNullOrEmpty())
+                return Ok(array);
+            else
+                return NoContent();
+        }
+
+        /// <summary>
+        /// Obtiene todos los qa leads activos.
+        /// </summary>
+        [HttpGet]
+        [Route("users/qaleads/actives")]
+        public virtual IHttpActionResult ListActiveQALeads()
+        {
+            var users = _repo.FindBy(u => u.Active && u.RoleId == (int)RoleEnum.QALead);
+
+            dynamic array = new JArray();
+            foreach (var p in users)
+            {
+                dynamic json = new JObject();
+                json.id = p.Id;
+
+                array.Add(json);
+            }
+
+            if (!users.IsNullOrEmpty())
+                return Ok(array);
+            else
+                return NoContent();
+        }
+
+        
+
+        [HttpPatch]
+        [Route("users/{userId}/notifications/{notificationId}/setseen")]
+        public IHttpActionResult SetSeen(int userId, int notificationId)
+        {
+            _ntfyRepo.SetSeen(userId, notificationId);
+            return Ok();
+        }
+
+        [HttpPatch]
+        [Route("users/{userId}/notifications/setseen")]
+        public IHttpActionResult SetAllSeen(int userId)
+        {
+            _ntfyRepo.SetUserNotificationsSeen(userId);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("users/{userId}/notifications")]
+        public IHttpActionResult GetUserNotifications(int userId)
+        {
+            dynamic jsonNots = new JArray();
+            var nots = _ntfyRepo.List(userId);
+
+            foreach (var not in nots)
+            {
+                dynamic jsonNot = new JObject();
+                jsonNot.id = not.Id;
+                jsonNot.projectId = not.ProjectId;
+                jsonNot.title = not.Title;
+                jsonNot.description = not.Description;
+                jsonNot.entityId = not.EntityId;
+                jsonNot.seen = not.Toes.First(t => t.UserId == userId).Seen;
+                jsonNot.actionId = not.ActionId;
+                jsonNot.entityTypeId = not.EntityTypeId;
+                jsonNot.typeId = not.TypeId;
+                jsonNot.createDate = not.CreateDate;
+
+                jsonNots.Add(jsonNot);
+            }
+      
+
+            return Ok(jsonNots);
+        }
+
+        #endregion
+
+        #region Internal
+
+        protected override void InitRepositories()
+        {
+            _repo = _crudRepo = _concreteRepo = _uow.Repository <UserRepository>();
+            _ntfyRepo = new NotificationRepository();
+            _clientRepo = _uow.Repository<ClientRepository>();
+            _projectRepo = _uow.Repository<ProjectRepository>();
+        }
+
+        protected override void ValidateEntity(User ent)
+        {
+            var existingUser = _concreteRepo.FindBy(u => u.UserName == ent.UserName && u.Id != ent.Id).FirstOrDefault();
+
+            if (!existingUser.IsNullOrEmpty())
+                BusinessException("El login name ya está siendo utilizado.");
+        }
+
+        protected override UserDto TranslateToDto(User entity)
+        {
+            var dto = base.TranslateToDto(entity);
+            dto.RoleName = entity.Role.Name;
+
+            if (entity.Client != null)
+                dto.ClientId = entity.Client.Id;
+
+            //if (entity.EmployeeUser != null)
+            //    dto.FileNumber = entity.EmployeeUser.FileNumber;
+
+            return dto;
+        }
+
+        protected override void CopyAndSetUpdateProperties(UserDto dto, User ent)
+        {
+            ent.FirstName = dto.FirstName;
+            ent.LastName = dto.LastName;
+            ent.UserName = dto.UserName;
+            ent.Password = dto.Password;
+            ent.RoleId = dto.RoleId;
+            ent.Email = dto.Email;
+            ent.Employee = dto.Employee;
+            ent.EmployeeUser = ent.EmployeeUser = dto.EmployeeUser.ToDto();
+
+            if (dto.ClientId.HasValue)
+                ent.Client = _clientRepo.Get(dto.ClientId.Value);
+            else
+                ent.Client = null;
+ 
+                        
+            
+        }
+
+        protected override void CopyAndSetAddProperties(UserDto dto, User ent)
+        {
+            ent.CreateDate = DateTime.Now;
+            ent.CreateById = this.LoggedUserId;
+
+            ent.FirstName = dto.FirstName;
+            ent.LastName = dto.LastName;
+            ent.UserName = dto.UserName;
+            ent.RoleId = dto.RoleId;
+            ent.Email = dto.Email;
+            
+
+            if (dto.ClientId.HasValue)
+                ent.Client = _clientRepo.Get(dto.ClientId.Value);
+
+            ent.Password = MD5Helper.GetMd5Hash("Engee");
+            ent.Active = true;
+
+            if (dto.Employee)
+                ent.EmployeeUser = dto.EmployeeUser.ToDto();
+            
+        }
+
+
+        #warning metodo duplicado, ya esta en projectController. ¿Implementar en una clase "Translator"?
+        private JArray toJsonArrayProject(IEnumerable<Project> projects)
+        {
+            dynamic projectsJson = new JArray();
+
+            foreach (var p in projects)
+            {
+                dynamic jsonProject = new JObject();
+                jsonProject.id = p.Id;
+                jsonProject.areaId = p.ProjectCharter.AreaId;
+                jsonProject.abbreviation = p.Abbreviation;
+                jsonProject.name = p.Name;
+
+                projectsJson.Add(jsonProject);
+            }
+
+            return projectsJson;
+        }
+
+        private IHttpActionResult ListSelectItemByExp(Expression<Func<User, bool>> exp)
+        {
+            var entities = _repo.FindBy(exp, i => i.Role).OrderByDescending(x => x.Id);
+            if (entities.Count() > 0)
+            {
+                dynamic lstJson = new JArray();
+                foreach (var item in entities)
+                {
+                    dynamic json = new JObject();
+                    json.id = item.Id;
+                    json.name = item.NameComplete();
+                    lstJson.Add(json);
+                }
+
+                return Ok(lstJson);
+            }
+            else
+            {
+                return NoContent();
+            }
+        }
+
+        private IHttpActionResult ListSelectItemByExp(Expression<Func<Project, bool>> exp)
+        {
+            var entities = _projectRepo.FindBy(exp).OrderByDescending(x => x.Id);
+            if (entities.Count() > 0)
+            {
+                dynamic lstJson = new JArray();
+                foreach (var item in entities)
+                {
+                    dynamic json = new JObject();
+                    json.id = item.Id;
+                    json.name = item.Name;
+                    lstJson.Add(json);
+                }
+
+                return Ok(lstJson);
+            }
+            else
+            {
+                return NoContent();
+            }
+        }
+
+        //private Employee CreateEmployee(EmployeeDto dto) {
+        //    var result = new Employee();
+
+        //    result.FileNumber = dto.FileNumber;
+        //    result.AdmissionDate = DateTime.Now;
+        //    result.LowDate = null;
+        //    result.CarrerPlanLevelId = 1;
+        //    result.CarrerPlanLevelPoints = 0;
+        //    result.WorkDay = 7.5m;
+
+        //    return result;
+        //}
+        #endregion
     }
 }
-/* Pantallas grandes */
-@media only screen and (min-width : 1824px) {
-    .btn-SosFletero{
-        margin-top: -10%;
-    }
-
-    .hero_container {
-        background-image: url(../img/fondo-landing-1.jpg);
-        background-size: cover;
-        height: 1300px;
-        filter: grayscale(40%);
-    }
-
-    .mb-3 {
-        margin-bottom: 6%;
-        margin-top: 40%;
-    }
-
-}
-/* iPhone 4 */
-@media only screen and (-webkit-min-device-pixel-ratio : 1.5), only screen and (min-device-pixel-ratio : 1.5) {
-}
-
