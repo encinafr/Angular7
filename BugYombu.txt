@@ -1,288 +1,224 @@
-
-
-        /// <summary>
-        /// Devuelve la calificacón del cuidado
-        /// </summary>
-        public decimal CarefulCalificationService { get; set; }
-
-        /// <summary>
-        /// Devuelve la calificacón de la Puntualidad
-        /// </summary>
-        public decimal PuntualityCalificationService { get; set; }
-
-
-        /// <summary>
-        /// Devuelve la calificacón del cuidado
-        /// </summary>
-        public decimal CarefulCalificationFlete { get; set; }
-
-        /// <summary>
-        /// Devuelve la calificacón de la Puntualidad
-        /// </summary>
-        public decimal PuntualityCalificationFlete { get; set; }
-	
-	
-	//CalificarModel 
-	
-        /// <summary>
-        /// Es puntual
-        /// </summary>
-        [DisplayName("Puntualidad")]
-        [Required]
-        public bool Puntuality { get; set; }
-
-        /// <summary>
-        /// Es cuidadoso
-        /// </summary>
-        [DisplayName("Cuidadoso")]
-        [Required]
-        public bool Careful{ get; set; }
-	
-	
-	
-	
-	  /// <summary>
-        /// Permite 
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("sendCalification")]
-        public async Task<ResultBase<CalificarModel>> SendCalification(CalificarModel request)
+      private string CalcularServiciosDisponibles
         {
-            if (request == null || string.IsNullOrEmpty(request.AccessToken) || string.IsNullOrEmpty(request.ReservationCode))
+            get
             {
-                return await Task.FromResult(new ResultBase<CalificarModel>(CalificarModel.NewNotFound())
-                {
-                    Ok = true
-                });
+                return @"
+USE [FLETALO]
+GO
+/****** Object:  StoredProcedure [Flete].[sp_CalcularServiciosDisponibles]    Script Date: 18/10/2019 12:06:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/**
+* Calcula los servicios que el usuario podrá filtrar
+*/
+
+ALTER PROCEDURE [Flete].[sp_CalcularServiciosDisponibles]
+	@Pisos Decimal,
+	@Horas Decimal,
+	@ZonaDesde BIGINT,
+	@ZonaHasta BIGINT,
+	@OrderBy NVARCHAR(100),
+	@MaxTotal DECIMAL,
+	@MinTotal DECIMAL,
+	@Offset INTEGER,
+	@Take INTEGER,
+	@Horario int,
+    @ServicioBase Flete.ServicioAFiltrarTableType READONLY,
+    @ServiciosAdicionales Flete.ServicioAFiltrarTableType READONLY
+AS
+BEGIN
+	SELECT CALCULOS.*, f.Name AS FleteName,f.[CarefulCalification] as CarefulCalificationFlete,f.[PuntualityCalification] as PuntualityCalificationFlete, fs.Name as ServicioName, 
+	fs.[Description], ad.[CityName] as FleteCity, f.[Calification], f.[CalificationCount],f.[CarefulCalification] as CarefulCalificationService, 
+	fs.[PuntualityCalification] as PuntualityCalificationService,fs.[HoraMinima] 
+		FROM (SELECT FleteServicioId, TotalBase, 
+			-- La suma de los adicionales recién se hace acá ya que deben multiplicarse por cada servicio base ofrecido
+			ISNULL(SUM(ISNULL(TotalAdicionales, 0.0)), 0.0) AS TotalAdicionales,
+			ISNULL(TotalBase + SUM(ISNULL(TotalAdicionales, 0.0)), 0.0) AS Total
+			    FROM (
+		-- Costo del servicio base
+		SELECT BASE.FleteId, BASE.FleteServicioId, Adicionales.IdCosto as IdCostoAdicional, 
+			Base.TotalBase, 
+			(0.5 * ((Adicionales.Total + Adicionales.PrecioMinimo) + ABS(Adicionales.Total - Adicionales.PrecioMinimo))) as TotalAdicionales 
+			FROM (
+				SELECT FleteId, FleteServicioId, SUM(ISNULL(TotalBase, 0.0)) as TotalBase FROM (
+					SELECT FleteId, FleteServicioId, (0.5 * ((Total + PrecioMinimo) + ABS(Total - PrecioMinimo))) as TotalBase FROM (
+						SELECT fs.FleteId, FleteServicioId, c.Id as IdCosto,
+						PRECIO *
+							-- Suma de todos los multiplicadores, ya que si da 0, no debe hacer ninguna cuenta
+						CAST((CalcularPorUnidad | CalcularPorHora | CalcularPorPisoEscalera) AS INTEGER) *
+								((0.5 * ((isp1.Cantidad + UnidadMinima) + ABS(isp1.Cantidad - UnidadMinima))) * CalcularPorUnidad + CAST(CalcularPorUnidad ^ 1 As INTEGER)) *
+								((0.5 * ((@Horas + c.HoraMinima) + ABS(@Horas - c.HoraMinima))) * CalcularPorHora + CAST(CalcularPorHora ^ 1 As INTEGER)) *
+								(@PISOS * CalcularPorPisoEscalera + CAST(CalcularPorPisoEscalera ^ 1 As INTEGER)) AS Total,
+								PrecioMinimo
+						    FROM Flete.FleteServicio fs
+						-- Hago Inner Join porque tiene que tener un costo mínimo
+						INNER JOIN Flete.Costo c ON fs.Id = c.FleteServicioId
+						INNER JOIN @ServicioBase isp1 ON fs.ServicioId = isp1.ServicioId -- InputServicioPrincipal
+					) BASE_CALCULOS
+				) BASE_CALCULOS2
+				-- Se hace este group by porque sino, la tabla de Costos hacía repetir los costos adicionales
+				GROUP BY BASE_CALCULOS2.FleteId, BASE_CALCULOS2.FleteServicioId
+			) BASE
+
+			-- Left join porque puede que no existan costos adicionales
+			LEFT JOIN 
+			(
+				SELECT fs.FleteId, FleteServicioId, c.Id as IdCosto,
+				PRECIO *
+					-- Suma de todos los multiplicadores, ya que si da 0, no debe hacer ninguna cuenta
+				CAST((CalcularPorUnidad | CalcularPorHora | CalcularPorPisoEscalera) AS INTEGER) *
+						((0.5 * ((isp2.Cantidad + UnidadMinima) + ABS(isp2.Cantidad - UnidadMinima))) * CalcularPorUnidad + CAST(CalcularPorUnidad ^ 1 As INTEGER)) *
+						((0.5 * ((@Horas + c.HoraMinima) + ABS(@Horas - c.HoraMinima))) * CalcularPorHora + CAST(CalcularPorHora ^ 1 As INTEGER)) *
+						(@PISOS * CalcularPorPisoEscalera + CAST(CalcularPorPisoEscalera ^ 1 As INTEGER)) AS Total,
+						PrecioMinimo
+				    FROM Flete.FleteServicio fs
+				INNER JOIN Flete.Costo c ON fs.Id = c.FleteServicioId
+				INNER JOIN  @ServiciosAdicionales isp2 ON fs.ServicioId = isp2.ServicioId -- InputServicioAdicional
+			) Adicionales
+			ON BASE.FleteId = Adicionales.FleteId
+		) COSTOS_CALCULADOS
+		Group By COSTOS_CALCULADOS.FleteServicioId, COSTOS_CALCULADOS.TotalBase
+	) CALCULOS
+	INNER JOIN Flete.FleteServicio fs ON CALCULOS.FleteServicioId = fs.Id
+		LEFT JOIN Flete.ImagenFleteServicio ifs ON ifs.FleteServicioId = fs.Id
+	INNER JOIN [FLETALO].[Flete].[Flete]f ON fs.FleteId = f.Id
+	INNER JOIN Location.Address ad ON f.AddressId = ad.Id
+	WHERE
+		(@MaxTotal IS NULL OR Total <= @MaxTotal)
+		AND
+		(@MinTotal IS NULL OR Total >= @MinTotal)
+		-- Debe existir en la zona
+		AND EXISTS (SELECT fz.CityId FROM Flete.FleteZona fz WHERE fz.CityId = @ZonaDesde AND fz.FleteId = f.Id)
+		AND EXISTS (SELECT fz.CityId FROM Flete.FleteZona fz WHERE fz.CityId = @ZonaHasta AND fz.FleteId = f.Id)
+		AND EXISTS (select top 1 1 
+					from Flete.FleteHorario fh 
+					where fh.FleteId = f.Id
+						    and fh.IsDeleted = 0
+						    and (@Horario = 1 or (@Horario <> 1 and fh.HorarioId = @Horario)))
+	ORDER BY
+		CASE WHEN @OrderBy = 'Total' THEN Total END,
+		CASE WHEN @OrderBy = 'Total DESC' THEN Total END DESC,
+		CASE WHEN @OrderBy = 'FleteServicioId' THEN CALCULOS.FleteServicioId END,
+		CASE WHEN @OrderBy = 'FleteServicioId DESC' THEN CALCULOS.FleteServicioId END DESC,
+		CASE WHEN @OrderBy = 'Calification' THEN fs.Calification END,
+		CASE WHEN @OrderBy = 'Calification DESC' THEN fs.Calification END DESC
+	OFFSET @Offset ROWS FETCH NEXT @Take ROWS ONLY
+ 		
+END";
             }
-
-            string code = request.ReservationCode;
-            string accessToken = request.AccessToken;
-
-            Dictionary<string, object> payload = null;
-            try
-            {
-                payload = _accessTokenGenerator.DecodeAccessToken(code, accessToken);
-                if (!payload.ContainsKey("userTicket"))
-                {
-                    return await Task.FromResult(new ResultBase<CalificarModel>(CalificarModel.NewNotFound()));
-                }
-            }
-            catch(Exception ex)
-            {
-                return await Task.FromResult(new ResultBase<CalificarModel>(CalificarModel.NewNotFound())
-                {
-                    Ok = true
-                });
-            }
-
-            var ticket = (string)payload["userTicket"];
-            var reserva = await _reservaService.FindByCodeAsync(code, ticket);
-            if (reserva == null)
-            {
-                // Ir a Error
-                return await Task.FromResult(new ResultBase<CalificarModel>(CalificarModel.NewNotFound()));
-            }
-            if (reserva.UserTicket != ticket)
-            {
-                // Ir a Error
-                return await Task.FromResult(new ResultBase<CalificarModel>(CalificarModel.NewNotFound()));
-            }
-            if (reserva.UsuarioCalifico == true)
-            {
-                // Ir a Error
-                return await Task.FromResult(new ResultBase<CalificarModel>(new CalificarModel
-                {
-                    AccessToken = accessToken,
-                    ReservationCode = code,
-                    NotFound = false,
-                    Calificada = true
-                }));
-            }
-
-            reserva.UsuarioAbrioCalificaciones = true;
-            reserva.UsuarioCalifico = true;
-
-            var utcNow = DateTime.UtcNow;
-            reserva.FechaUsuarioCalificaUTC = utcNow;
-            reserva.UltimaFecUsuarioAbreCalificacionUTC = utcNow;
-            reserva.ComentarioCalificacionUsuario = request.Comments;
-            reserva.RatingsUsuario = request.Rating;
-            reserva.CuidadoCalificacionUsuario = request.Careful;
-            reserva.PuntualidadCalificacionUsuario = request.Puntuality;
-            reserva.Estado = request.Estado == 1 ? Core.Entities.EstadoReserva.Realizada : Core.Entities.EstadoReserva.NoRealizada;
-            await _reservaService.SaveAsync(reserva);
-
-
-            return await Task.FromResult(new ResultBase<CalificarModel>(new CalificarModel
-            {
-                ReservationCode = code,
-                AccessToken = accessToken,
-                Calificada = false,
-                NotFound = false
-            })
-            {
-                Ok = true
-            });
         }
-    }
-    
-    
-    
-    
-       /// <summary>
-        /// Obtiene todos los servicios de fletes que están disponibles para los valores de filtros enviados
-        /// </summary>
-        /// <param name="pageRequest"></param>
-        /// <returns></returns>
-        public async Task<ServicioResult> GetFletes([ModelBinder(typeof(PageRequestModelBinder))] PageRequest pageRequest)
+
+
+        private string DowCalcularServiciosDisponibles
         {
-            try
+            get
             {
-                var mainService = await _fleteService.GetServicioByType(Core.Entities.TipoServicio.Flete);
-                long mainServiceId = 0;
-                if (mainService != null)
-                    mainServiceId = mainService.Id;
+                return @"
+USE [Fletalo]
+GO
+/****** Object:  StoredProcedure [Flete].[sp_CalcularServiciosDisponibles]    Script Date: 18/10/2019 14:16:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/**
+* Calcula los servicios que el usuario podrá filtrar
+*/
 
-                long peonServiceId = 0;
-                int cantPeones = 0;
-                if (pageRequest.Filters.ContainsKey("filter_peon"))
-                {
-                    if (int.TryParse(pageRequest.Filters["filter_peon"].ToString(), out cantPeones))
-                    {
-                        var peonService = await _fleteService.GetServicioByType(Core.Entities.TipoServicio.Peon);
-                        if (mainService != null)
-                            peonServiceId = peonService.Id;
-                    }
-                }
+ALTER PROCEDURE [Flete].[sp_CalcularServiciosDisponibles]
+	@Pisos Decimal,
+	@Horas Decimal,
+	@ZonaDesde BIGINT,
+	@ZonaHasta BIGINT,
+	@OrderBy NVARCHAR(100),
+	@MaxTotal DECIMAL,
+	@MinTotal DECIMAL,
+	@Offset INTEGER,
+	@Take INTEGER,
+	@Horario int,
+    @ServicioBase Flete.ServicioAFiltrarTableType READONLY,
+    @ServiciosAdicionales Flete.ServicioAFiltrarTableType READONLY
+AS
+BEGIN
+	SELECT CALCULOS.*, f.Name AS FleteName, fs.Name as ServicioName, fs.[Description], ad.[CityName] as FleteCity, fs.[Calification], fs.[CalificationCount], fs.[HoraMinima] FROM (
+		SELECT FleteServicioId, 
+			TotalBase, 
+			-- La suma de los adicionales recién se hace acá ya que deben multiplicarse por cada servicio base ofrecido
+			ISNULL(SUM(ISNULL(TotalAdicionales, 0.0)), 0.0) AS TotalAdicionales,
+			ISNULL(TotalBase + SUM(ISNULL(TotalAdicionales, 0.0)), 0.0) AS Total
+			    FROM
+		(
+		-- Costo del servicio base
+		SELECT BASE.FleteId, BASE.FleteServicioId, Adicionales.IdCosto as IdCostoAdicional, 
+			Base.TotalBase, 
+			(0.5 * ((Adicionales.Total + Adicionales.PrecioMinimo) + ABS(Adicionales.Total - Adicionales.PrecioMinimo))) as TotalAdicionales 
+			FROM (
+				SELECT FleteId, FleteServicioId, SUM(ISNULL(TotalBase, 0.0)) as TotalBase FROM (
+					SELECT FleteId, FleteServicioId, (0.5 * ((Total + PrecioMinimo) + ABS(Total - PrecioMinimo))) as TotalBase FROM (
+						SELECT fs.FleteId, FleteServicioId, c.Id as IdCosto,
+						PRECIO *
+							-- Suma de todos los multiplicadores, ya que si da 0, no debe hacer ninguna cuenta
+						CAST((CalcularPorUnidad | CalcularPorHora | CalcularPorPisoEscalera) AS INTEGER) *
+								((0.5 * ((isp1.Cantidad + UnidadMinima) + ABS(isp1.Cantidad - UnidadMinima))) * CalcularPorUnidad + CAST(CalcularPorUnidad ^ 1 As INTEGER)) *
+								((0.5 * ((@Horas + c.HoraMinima) + ABS(@Horas - c.HoraMinima))) * CalcularPorHora + CAST(CalcularPorHora ^ 1 As INTEGER)) *
+								(@PISOS * CalcularPorPisoEscalera + CAST(CalcularPorPisoEscalera ^ 1 As INTEGER)) AS Total,
+								PrecioMinimo
+						    FROM Flete.FleteServicio fs
+						-- Hago Inner Join porque tiene que tener un costo mínimo
+						INNER JOIN Flete.Costo c ON fs.Id = c.FleteServicioId
+						INNER JOIN @ServicioBase isp1 ON fs.ServicioId = isp1.ServicioId -- InputServicioPrincipal
+					) BASE_CALCULOS
+				) BASE_CALCULOS2
+				-- Se hace este group by porque sino, la tabla de Costos hacía repetir los costos adicionales
+				GROUP BY BASE_CALCULOS2.FleteId, BASE_CALCULOS2.FleteServicioId
+			) BASE
 
-                BusquedaRequest busquedaRequest = new BusquedaRequest();
-                busquedaRequest.ServiciosBase.Add(new ServicioCantidad { ServicioId = mainServiceId, Cantidad = 1 });
-                busquedaRequest.PageIndex = pageRequest.PageIndex;
-                busquedaRequest.PageSize = pageRequest.PageSize;
-
-                if (cantPeones > 0 && peonServiceId > 0)
-                {
-                    busquedaRequest.ServiciosAdicionales.Add(new ServicioCantidad { ServicioId = peonServiceId, Cantidad = cantPeones });
-                }
-
-                // 
-                if (pageRequest.Filters.ContainsKey("filter_desde"))
-                {
-                    long desde;
-                    if (long.TryParse(pageRequest.Filters["filter_desde"].ToString(), out desde))
-                    {
-                        busquedaRequest.ZonaDesde = desde;
-                    }
-                }
-
-                if (pageRequest.Filters.ContainsKey("filter_hasta"))
-                {
-                    long hasta;
-                    if (long.TryParse(pageRequest.Filters["filter_hasta"].ToString(), out hasta))
-                    {
-                        busquedaRequest.ZonaHasta = hasta;
-                    }
-                }
-
-                if (pageRequest.Filters.ContainsKey("filter_from"))
-                {
-                    decimal from;
-                    if (decimal.TryParse(pageRequest.Filters["filter_from"].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out from))
-                    {
-                        busquedaRequest.PrecioDesde = from;
-                    }
-                }
-
-                if (pageRequest.Filters.ContainsKey("filter_to"))
-                {
-                    decimal to;
-                    if (decimal.TryParse(pageRequest.Filters["filter_to"].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out to))
-                    {
-                        busquedaRequest.PrecioHasta = to;
-                    }
-                }
-
-                if (pageRequest.Filters.ContainsKey("filter_floor_from"))
-                {
-                    int floorFrom;
-                    if (int.TryParse(pageRequest.Filters["filter_floor_from"].ToString(), out floorFrom))
-                    {
-                        busquedaRequest.PisosDesde = floorFrom;
-                    }
-                }
-
-                if (pageRequest.Filters.ContainsKey("filter_floor_to"))
-                {
-                    int floorTo;
-                    if (int.TryParse(pageRequest.Filters["filter_floor_to"].ToString(), out floorTo))
-                    {
-                        busquedaRequest.PisosHasta = floorTo;
-                    }
-                }
-
-                if (pageRequest.Filters.ContainsKey("filter_horario"))
-                {
-                    int horario;
-                    if (int.TryParse(pageRequest.Filters["filter_horario"].ToString(), out horario))
-                    {
-                        busquedaRequest.Horario = horario;
-                    }
-                }
-
-
-                // TODO LUCAS: Ponerlo en un metodo igual que los de arriba, refactorizar
-                //busquedaRequest.OrderByPrice = int.Parse(pageRequest.Filters["filter_orderbyprice"].ToString());
-                busquedaRequest.OrderBy = OrderByColumn.CalificationDesc;
-
-                // Realiza la búsqueda
-                var result = await _busquedaFleteService.FindServices(busquedaRequest);
-
-                List<FleteViewModel> fletes = new List<FleteViewModel>();
-
-                var numFletes = result.Result.Count;
-                for (int i = 0; i < numFletes; i++)
-                {
-                    var flete = result.Result[i];
-                    flete.CommentFlete = await _busquedaFleteService.FindComment(flete.FleteServicioId);
-                    fletes.Add(new FleteViewModel
-                    {
-                        Id = (int)flete.FleteServicioId,
-                        Title = flete.ServicioName,
-                        Name = flete.FleteName,
-                        Description = flete.Description,
-                        CommentFlete = flete.CommentFlete,
-                        Total = flete.Total,
-                        TotalAdicionales = flete.TotalAdicionales,
-                        TotalBase = flete.TotalBase,
-                        CityName = flete.FleteCity,
-                        Calification = Convert.ToInt32(flete.Calification),
-                        CalificationCount = flete.CalificationCount,
-                        CarefulCalification = flete.CarefulCalificationService,
-                        PuntualityCalification = flete.PuntualityCalificationService,
-                        Additionals = TranslateAdditionalsViewModel(flete.Adicionales),
-                        Image = TranslateImageFleteServicioViewModel(flete.Imagenes),
-                        HoraMinima = Convert.ToInt32(flete.HoraMinima)
-                    });
-                }
-
-                return await Task.FromResult(new ServicioResult(fletes)
-                {
-                    PageIndex = 1, // TODO: Completar con el número de página que corresponda
-                    PageSize = pageRequest.PageSize,
-                    Total = result.Total,
-                    PrecioDesde = result.PrecioDesde,
-                    PrecioHasta = result.PrecioHasta,
-                    PrecioMaximo = result.PrecioMaximo,
-                    PrecioMinimo = result.PrecioMinimo
-                });
+			-- Left join porque puede que no existan costos adicionales
+			LEFT JOIN 
+			(
+				SELECT fs.FleteId, FleteServicioId, c.Id as IdCosto,
+				PRECIO *
+					-- Suma de todos los multiplicadores, ya que si da 0, no debe hacer ninguna cuenta
+				CAST((CalcularPorUnidad | CalcularPorHora | CalcularPorPisoEscalera) AS INTEGER) *
+						((0.5 * ((isp2.Cantidad + UnidadMinima) + ABS(isp2.Cantidad - UnidadMinima))) * CalcularPorUnidad + CAST(CalcularPorUnidad ^ 1 As INTEGER)) *
+						((0.5 * ((@Horas + c.HoraMinima) + ABS(@Horas - c.HoraMinima))) * CalcularPorHora + CAST(CalcularPorHora ^ 1 As INTEGER)) *
+						(@PISOS * CalcularPorPisoEscalera + CAST(CalcularPorPisoEscalera ^ 1 As INTEGER)) AS Total,
+						PrecioMinimo
+				    FROM Flete.FleteServicio fs
+				INNER JOIN Flete.Costo c ON fs.Id = c.FleteServicioId
+				INNER JOIN  @ServiciosAdicionales isp2 ON fs.ServicioId = isp2.ServicioId -- InputServicioAdicional
+			) Adicionales
+			ON BASE.FleteId = Adicionales.FleteId
+		) COSTOS_CALCULADOS
+		Group By COSTOS_CALCULADOS.FleteServicioId, COSTOS_CALCULADOS.TotalBase
+	) CALCULOS
+	INNER JOIN Flete.FleteServicio fs ON CALCULOS.FleteServicioId = fs.Id
+		LEFT JOIN Flete.ImagenFleteServicio ifs ON ifs.FleteServicioId = fs.Id
+	INNER JOIN Flete.Flete f ON fs.FleteId = f.Id
+	INNER JOIN Location.Address ad ON f.AddressId = ad.Id
+	WHERE
+		(@MaxTotal IS NULL OR Total <= @MaxTotal)
+		AND
+		(@MinTotal IS NULL OR Total >= @MinTotal)
+		-- Debe existir en la zona
+		AND EXISTS (SELECT fz.CityId FROM Flete.FleteZona fz WHERE fz.CityId = @ZonaDesde AND fz.FleteId = f.Id)
+		AND EXISTS (SELECT fz.CityId FROM Flete.FleteZona fz WHERE fz.CityId = @ZonaHasta AND fz.FleteId = f.Id)
+		AND EXISTS (select top 1 1 
+					from Flete.FleteHorario fh 
+					where fh.FleteId = f.Id
+						    and fh.IsDeleted = 0
+						    and (@Horario = 1 or (@Horario <> 1 and fh.HorarioId = @Horario)))
+	ORDER BY
+		CASE WHEN @OrderBy = 'Total' THEN Total END,
+		CASE WHEN @OrderBy = 'Total DESC' THEN Total END DESC,
+		CASE WHEN @OrderBy = 'FleteServicioId' THEN CALCULOS.FleteServicioId END,
+		CASE WHEN @OrderBy = 'FleteServicioId DESC' THEN CALCULOS.FleteServicioId END DESC,
+		CASE WHEN @OrderBy = 'Calification' THEN fs.Calification END,
+		CASE WHEN @OrderBy = 'Calification DESC' THEN fs.Calification END DESC
+	OFFSET @Offset ROWS FETCH NEXT @Take ROWS ONLY
+ 		
+END";
             }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-          
         }
