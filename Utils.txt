@@ -1,1 +1,29 @@
 https://app.slack.com/client/T59BD55A5/GPW7156TV
+
+    public class InternalUserRelations
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int User_id { get; set; }
+
+        public int Internal_role_id { get; set; }
+
+        public int Internal_entity_id { get; set; }
+    }
+    
+    
+    public override void Up()
+        {
+            DropTable("dbo.InternalUserRelations");
+
+            CreateTable(
+                    "dbo.InternalUserRelations",
+                    c => new
+                    {
+                        User_id = c.Int(nullable: false),
+                        Internal_role_id = c.Int(nullable: false),
+                        Internal_entity_id = c.Int(nullable: false)
+                    })
+                .PrimaryKey(t => t.User_id);
+
+        }
