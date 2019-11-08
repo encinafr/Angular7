@@ -27,3 +27,135 @@ https://app.slack.com/client/T59BD55A5/GPW7156TV
                 .PrimaryKey(t => t.User_id);
 
         }
+// fletalo 
+
+.img {
+    cursor: pointer;
+}
+
+.img:hover {
+    cursor: pointer;
+}
+
+ <div class="col-8 mt-2" (click)="router.navigate(['']);">
+                <img src="../../assets/images/unsplash/fletes-images/logo_chico.png" alt="" class="img">
+            </div>
+            
+            
+            
+            
+            HOME Flete
+            <section (keydown)="keydown($event)" class="intro" [ngClass]="{'overflow-hideden': videoPlay}">
+    <div (keydown)="keydown($event)" class="upper_text">
+        <img src="/assets/images/home/logo.png" class="logo" />
+    </div>
+    <div (keydown)="keydown($event)" class="row">
+        <div class="col-md-6 col-sm-12 left filter" [ngClass]="{'font-video': videoPlay,'noHover': videoPlay}">
+            <a id="mudanzasUrl" class="linktext" href="{{ mudanzaUrl }}" [ngClass]="{'video-hidden': videoPlay}">Mudanzas</a>
+        </div>
+        <div class="col-md-6 col-sm-12 right filter" [ngClass]="{'font-video': videoPlay,'noHover': videoPlay}">
+            <a id="fletesUrl" class="linktext" routerLink='/fletes' [ngClass]="{'video-hidden': videoPlay}">Fletes</a>
+        </div>
+    </div>
+    <div (keydown)="keydown($event)" class="bottom_text">
+        <div id="tag-iframe">
+            <iframe *ngIf="videoPlay" id="video-link" class="ml-20-video video-size" [src]="videoUrl | safe" frameborder="0" allowfullscreen> </iframe>
+        </div>
+        <div class="ml-22">
+            <button class="lity-close" [ngClass]="{'video-hidden': !videoPlay}" type="button" id="close-video" title="Cerrar (Esc)" (click)="openVideo()" data-lity-close="">×</button>
+            <p *ngIf="!videoPlay" class="video-link" target="_self" data-lity="">
+                <span id="video-play" class="video-icon" [ngClass]="{'video-hidden': videoPlay}" (click)="openVideo()"></span>
+            </p>
+        </div>
+        <div *ngIf="!videoPlay" class="ml-20">
+            <span class="video-text" id="video-text" [ngClass]="{'video-hidden': videoPlay}">¿Qué es fletalo?</span>
+        </div>
+        <div *ngIf="!videoPlay" class="ml-contact" id="btn-contact" [ngClass]="{'video-hidden': videoPlay}">
+            <a href="#contact" class="btn hide-sm btn-contrast btn-large btn-semi-transparent" [ngClass]="{'video-hidden': videoPlay}">
+				Contactanos
+			</a>
+        </div>
+    </div>
+</section>
+<section *ngIf="!videoPlay" id="contact" class="contact-background">
+    <!--Contact-->
+    <div class="contact-us">
+        <div class="container no-padding">
+            <div class="g-heading-v11 text-center g-mb-70 text-home" style="margin-left:23%">
+                <h2 class="font-weight">Contactanos</h2>
+                <p class="p-contact">Escribinos y nos estaremos contactando dentro de las próximas 48hs</p>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <!--Contact list-->
+                <div class="col-md-4 contact-list">
+                    <h4 class="font-weight">Escribinos!</h4>
+                    <ul class="list-unstyled g-mb-30 text-home ">
+                        <li>Email <span>info@fletalo.com.ar</span></li>
+                    </ul>
+                </div>
+                <!--Contact form-->
+                <div class="col-md-8">
+                    <form class="sky-form contact-style" id="sky-form3">
+                        <fieldset>
+                            <div class="row mt-4">
+                                <div class="col-md-12 col-md-offset-0">
+                                    <p id="campoObligatorioName" class="campoObligatorio hidecampoObligatorio">*</p>
+                                    <div>
+                                        <input class="form-control rounded" id="Name" name="Name" placeholder="Nombre " [(ngModel)]="message.name" type="text" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-md-12 col-md-offset-0">
+                                    <p id="campoObligatorioEmail" class="campoObligatorio hidecampoObligatorio">*</p>
+                                    <div>
+                                        <input class="form-control rounded" id="Email" name="Email" placeholder="Mail " [(ngModel)]="message.mail" type="text" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-md-12 col-md-offset-0">
+                                    <p id="campoObligatorioMessage" class="campoObligatorio hidecampoObligatorio">*</p>
+                                    <div>
+                                        <textarea class="form-control rounded g-textarea-noresize" cols="1" id="Message" [(ngModel)]="message.message" name="Message" placeholder="Mensaje " rows="4"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <p><button id="sendContacto" type="button" (click)="sendMessage()" class="mt-4 btn-search btn-search-index btn-default btn-large btn-block">Enviar</button></p>
+                        </fieldset>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-3">
+                    <div class="cr-left">
+                        <p>&copy; 2019 <a href="../index.html" target="_blank">Fletalo</a></p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-9">
+                    <div class="cr-right">
+                        <ul class="list-unstyled list-inline cr-list">
+                            <li><a href="https://www.facebook.com/fletaloarg/" class="fb rounded" target="_blank"><i class="fa fa-facebook"></i></a></li>
+                            <li><a href="https://www.linkedin.com/company/fletalo/" class="rounded" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+ @HostListener('window:keyup', ['$event'])
+    keyEvent(event: KeyboardEvent) {
+        if (event.code == "Escape" && this.videoPlay) {
+          this.openVideo();
+        }
+    }
