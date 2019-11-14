@@ -159,3 +159,5 @@ https://app.slack.com/client/T59BD55A5/GPW7156TV
           this.openVideo();
         }
     }
+    //Email validator
+    https://angular-templates.io/
