@@ -40,5 +40,8 @@ https://app.slack.com/client/T59BD55A5/GPW7156TV
   insert into AdditionalService ( Name, ShipperId)  values ('Carlos',1)
   insert into AdditionalServiceAssistant (Id,HourlyRate, ExtraRatePerFloor)  values (1,90,30)
   
+  //Convert string to date time sql server 
+  Cast('03/16/2020 10:53' as datetime)
+  
   
   https://github.com/cypress-io/cypress-and-jest-typescript-example
