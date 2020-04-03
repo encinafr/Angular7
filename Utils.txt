@@ -45,3 +45,6 @@ https://app.slack.com/client/T59BD55A5/GPW7156TV
   
   
   https://github.com/cypress-io/cypress-and-jest-typescript-example
+  
+  //Listen localhost in mobile browser
+  ng serve --host 0.0.0.0
